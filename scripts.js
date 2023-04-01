@@ -1,5 +1,5 @@
 
-var player = function(tic, name) {
+const player = function(tic, name) {
     let active = false;
     const isActive = () => active;
     const toggleActive = () => {
@@ -7,7 +7,7 @@ var player = function(tic, name) {
     }
     return {tic, name, isActive, toggleActive}
 }
-var gameBoard = (function() {
+const gameBoard = (function() {
     let tics = ['', '', '', '', '', '', '', '', ''];
     let winOptions = [[0, 1, 2], [3, 4, 5], [6, 7, 8], [0, 3, 6], [1, 4, 7], [2, 5, 8], [0, 4, 8], [2, 4, 6]];
     let playerOne = player('X', 'Bob');
@@ -17,32 +17,26 @@ var gameBoard = (function() {
         p2: 0
     }
     const checkWin = () => {
-        let count = 0;
-        winOptions.forEach(option => {
-            if (tics[option[0]] !== '' && tics[option[0]] === tics[option[1]] && tics[option[0]] === tics[option[2]]) {
-                return tics[option[0]];
-            }
-        })
-        for(let i = 0; i < tics.length; i++) {
-            if (displayController.buttons[i].isFilled) {
-                count++;
-            }
-        }
-        if(count === 9) {
-            return 'tie';
-        } else {
-            return '';
-        }
+        console.log(tics)
     }
     const incrementScore = (winner) => {
-        this.score[winner] += 1;
+        score[winner] += 1;
     }
-    return {tics};
+    const playTurn = (e) => {
+        tics[e.target.dataset.index] = playerOne.isActive() ? playerOne.tic : playerTwo.tic;
+        alert(tics[e.target.dataset.index]);
+        checkWin();
+        displayController.updateBoard()
+        playerOne.toggleActive();
+    }
+    const getTic = (index) => tics[index];
+    return {playTurn, getTic};
 })();
 const gameSpace = (index) => {
     let button = document.createElement('button');
     button.classList.add('game-piece');
     button.dataset.index = index;
+    button.addEventListener('click', gameBoard.playTurn);
     return button;
 }
 var displayController = (function() {
@@ -59,7 +53,17 @@ var displayController = (function() {
             board.appendChild(button);
         })
     }
-    return {populateBoard};
+    const clearBoard = () => {
+        board.innerHTML = '';
+    }
+    const updateBoard = () => {
+        clearBoard()
+        for(let i = 0; i < buttons.length; i++) {
+            buttons[i].textContent = gameBoard.getTic(i);
+        }
+        populateBoard();
+    }
+    return {populateBoard, updateBoard};
 })();
 
 displayController.populateBoard()
