@@ -17,17 +17,37 @@ const gameBoard = (function() {
         p2: 0
     }
     const checkWin = () => {
-        console.log(tics)
+        let emptyTics = 0;
+        let winner = ''
+       winOptions.forEach(option => {
+            if (tics[option[0]] !== '' && tics[option[1]] === tics[option[0]] && tics[option[2]] === tics[option[0]]) {
+                winner = tics[option[0]];
+            } 
+       })
+       tics.forEach(tic => {
+            if (tic === '') {
+                emptyTics++
+            }
+       });
+       if (emptyTics === 0 && winner === '') {
+            return 'tie';
+       } else if (winner !== '') {
+            return winner;
+       } else {
+        return 'none';
+       }
     }
     const incrementScore = (winner) => {
         score[winner] += 1;
     }
     const playTurn = (e) => {
         tics[e.target.dataset.index] = playerOne.isActive() ? playerOne.tic : playerTwo.tic;
-        alert(tics[e.target.dataset.index]);
-        checkWin();
+        const winner = checkWin();
         displayController.updateBoard()
         playerOne.toggleActive();
+        if (winner !== 'none') {
+            displayController.showWinner(winner);
+        }
     }
     const getTic = (index) => tics[index];
     return {playTurn, getTic};
@@ -48,6 +68,10 @@ var displayController = (function() {
     for (let i = 0; i < 9; i++) {
         buttons.push(gameSpace(i))
     }
+    const showWinner = (winner) => {
+        clearBoard();
+        console.log(winner);
+    }
     const populateBoard = () => {
         buttons.forEach(button => {
             board.appendChild(button);
@@ -63,7 +87,7 @@ var displayController = (function() {
         }
         populateBoard();
     }
-    return {populateBoard, updateBoard};
+    return {populateBoard, updateBoard, showWinner};
 })();
 
 displayController.populateBoard()
