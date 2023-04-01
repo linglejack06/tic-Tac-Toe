@@ -1,28 +1,5 @@
-var events = {
-    events: {},
-    on: function (eventName, fn) {
-      this.events[eventName] = this.events[eventName] || [];
-      this.events[eventName].push(fn);
-    },
-    off: function(eventName, fn) {
-      if (this.events[eventName]) {
-        for (var i = 0; i < this.events[eventName].length; i++) {
-          if (this.events[eventName][i] === fn) {
-            this.events[eventName].splice(i, 1);
-            break;
-          }
-        };
-      }
-    },
-    emit: function (eventName, data) {
-      if (this.events[eventName]) {
-        this.events[eventName].forEach(function(fn) {
-          fn(data);
-        });
-      }
-    }
-  };
-const player = function(tic, name) {
+
+var player = function(tic, name) {
     let active = false;
     const isActive = () => active;
     const toggleActive = () => {
@@ -30,38 +7,58 @@ const player = function(tic, name) {
     }
     return {tic, name, isActive, toggleActive}
 }
-const Button = function(index) {
-    const button = document.createElement('button');
-    button.classList.add('game-piece');
-    button.dataset.index = index;
-    button.addEventListener('click', events.emit('clicked', button));
-    const update = (tic) => {
-        button.textContent = tic;
-    }
-    return {button, update};
-}
-const gameBoard = (function() {
+var gameBoard = (function() {
     let tics = ['', '', '', '', '', '', '', '', ''];
+    let winOptions = [[0, 1, 2], [3, 4, 5], [6, 7, 8], [0, 3, 6], [1, 4, 7], [2, 5, 8], [0, 4, 8], [2, 4, 6]];
     let playerOne = player('X', 'Bob');
     let playerTwo = player('O', 'Sarah');
-    const updateTics = (button) => {
-        const place = button.dataset.index;
-        let currentPlayerTic = playerOne.isActive() ? playerOne.tic : playerTwo.tic;
-        tics[place] = currentPlayerTic
-        button.update(currentPlayerTic);
+    let score = { 
+        p1: 0,
+        p2: 0
     }
-    return {tics, playerOne, playerTwo, updateTics};
+    const checkWin = () => {
+        let count = 0;
+        winOptions.forEach(option => {
+            if (tics[option[0]] !== '' && tics[option[0]] === tics[option[1]] && tics[option[0]] === tics[option[2]]) {
+                return tics[option[0]];
+            }
+        })
+        for(let i = 0; i < tics.length; i++) {
+            if (displayController.buttons[i].isFilled) {
+                count++;
+            }
+        }
+        if(count === 9) {
+            return 'tie';
+        } else {
+            return '';
+        }
+    }
+    const incrementScore = (winner) => {
+        this.score[winner] += 1;
+    }
+    return {tics};
 })();
-const displayController = (function() {
+const gameSpace = (index) => {
+    let button = document.createElement('button');
+    button.classList.add('game-piece');
+    button.dataset.index = index;
+    return button;
+}
+var displayController = (function() {
     let board = document.getElementById('board');
     let score = document.getElementById('score');
-    
+    let playerOne = player('X', 'Bob');
+    let playerTwo = player('O', 'Sarah');
+    let buttons = [];
+    for (let i = 0; i < 9; i++) {
+        buttons.push(gameSpace(i))
+    }
     const populateBoard = () => {
-        for(let i = 0; i < 9; i++) {
-            let button = Button(i);
-            board.appendChild(button.button);
-        }
-    };
+        buttons.forEach(button => {
+            board.appendChild(button);
+        })
+    }
     return {populateBoard};
 })();
 
