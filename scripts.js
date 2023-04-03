@@ -15,10 +15,11 @@ const player = function(tic, name) {
 const gameBoard = (function() {
     let tics = ['', '', '', '', '', '', '', '', ''];
     let winOptions = [[0, 1, 2], [3, 4, 5], [6, 7, 8], [0, 3, 6], [1, 4, 7], [2, 5, 8], [0, 4, 8], [2, 4, 6]];
-    let players;
+    let players = {p1: player('X', 'Bob'), p2: player('O', 'Scott')}
     const startGame = (e) => {
         e.preventDefault();
-        players = displayController.getForm();
+        players = displayController.getForm(players);
+        console.log(players);
         displayController.renderGame();
     }
     const checkWin = () => {
@@ -48,11 +49,14 @@ const gameBoard = (function() {
         displayController.updateBoard()
         players.p1.toggleActive();
         if (winner !== 'none') {
-            displayController.showWinner(winner);
+            displayController.showWinner((players.p1.tic === winner) ? players.p1.name : players.p2.name);
         }
     }
+    const getScore = () => {
+        return {p1Score: players.p1.score, p2Score: players.p2.score};
+    }
     const getTic = (index) => tics[index];
-    return {playTurn, getTic, startGame};
+    return {playTurn, getTic, startGame, getScore};
 })();
 const gameSpace = (index) => {
     let button = document.createElement('button');
@@ -64,6 +68,9 @@ const gameSpace = (index) => {
 var displayController = (function() {
     let board = document.getElementById('board');
     let score = document.getElementById('score');
+    let playerScore = gameBoard.getScore();
+    let scoreText = document.querySelector('.score');
+    let winnerName = document.querySelector('winner');
     let form = document.querySelector('.form');
     let startButton = document.getElementById('start');
     startButton.addEventListener('click', gameBoard.startGame);
@@ -78,16 +85,19 @@ var displayController = (function() {
     const _renderWin = (winner) => {
         score.classList.remove('inactive')
         score.classList.add('active');
-
+        winnerName.textContent = `Winner: ${winner}`;
+        scoreText.textContent = `${playerScore.p1Score}(X) - ${playerScore.p2Score}(O)`;
     }
     const renderGame = () => {
         hideForm();
         _populateBoard();
     }
-    const getForm = () => {
+    const getForm = (players) => {
         const p1Name = document.getElementById('p1Name').value;
         const p2Name = document.getElementById('p2Name').value;
-        return {p1: player('X', p1Name), p2: player('O', p2Name)};
+        players.p1.name = p1Name;
+        players.p2.name = p2Name;
+        return players;
     }
     const hideForm = () => {
         form.style.display = 'none';
