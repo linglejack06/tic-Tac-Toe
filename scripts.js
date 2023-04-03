@@ -43,6 +43,9 @@ const gameBoard = (function() {
         return 'none';
        }
     }
+    const resetTics = () => {
+        tics = ['', '', '', '', '', '', '', '', ''];
+    }
     const playTurn = (e) => {
         tics[e.target.dataset.index] = players.p1.isActive() ? players.p1.tic : players.p2.tic;
         const winner = checkWin();
@@ -56,7 +59,7 @@ const gameBoard = (function() {
         return {p1Score: players.p1.score, p2Score: players.p2.score};
     }
     const getTic = (index) => tics[index];
-    return {playTurn, getTic, startGame, getScore};
+    return {playTurn, getTic, resetTics, startGame, getScore};
 })();
 const gameSpace = (index) => {
     let button = document.createElement('button');
@@ -73,7 +76,8 @@ var displayController = (function() {
     let winnerName = document.querySelector('winner');
     let form = document.querySelector('.form');
     let startButton = document.getElementById('start');
-    startButton.addEventListener('click', gameBoard.startGame);
+    let restartButton = document.querySelector('.restart');
+    let nextGameButton = document.querySelector('.next-game');
     let buttons = [];
     for (let i = 0; i < 9; i++) {
         buttons.push(gameSpace(i))
@@ -88,18 +92,34 @@ var displayController = (function() {
         winnerName.textContent = `Winner: ${winner}`;
         scoreText.textContent = `${playerScore.p1Score}(X) - ${playerScore.p2Score}(O)`;
     }
+    const _hideWin = () => {
+        score.classList.remove('active');
+        score.classList.add('inactive');
+        
+    }
     const renderGame = () => {
-        hideForm();
+        _hideForm();
+        _hideWin();
         _populateBoard();
     }
     const getForm = (players) => {
         const p1Name = document.getElementById('p1Name').value;
         const p2Name = document.getElementById('p2Name').value;
-        players.p1.name = p1Name;
-        players.p2.name = p2Name;
+        if(p1Name !== null) {
+            players.p1.name = p1Name;
+        }
+        if(p2Name !== null) {
+            players.p2.name = p2Name;
+        }
+        players.p1.score = 0;
+        players.p2.score = 0;
         return players;
     }
-    const hideForm = () => {
+    const _resetGame = () => {
+        form.style.display = 'block';
+        gameBoard.resetTics();
+    }
+    const _hideForm = () => {
         form.style.display = 'none';
     }
     const _populateBoard = () => {
@@ -115,8 +135,11 @@ var displayController = (function() {
         for(let i = 0; i < buttons.length; i++) {
             buttons[i].textContent = gameBoard.getTic(i);
         }
-        populateBoard();
+        _populateBoard();
     }
+    startButton.addEventListener('click', gameBoard.startGame);
+    restartButton.addEventListener('click', _resetGame);
+    nextGameButton.addEventListener('click', renderGame);
     return {renderGame, getForm, updateBoard, showWinner};
 })();
 
