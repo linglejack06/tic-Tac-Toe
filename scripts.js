@@ -72,12 +72,17 @@ var displayController = (function() {
         buttons.push(gameSpace(i))
     }
     const showWinner = (winner) => {
-        clearBoard();
-        console.log(winner);
+        _clearBoard();
+        _renderWin(winner);
+    }
+    const _renderWin = (winner) => {
+        score.classList.remove('inactive')
+        score.classList.add('active');
+
     }
     const renderGame = () => {
         hideForm();
-        populateBoard();
+        _populateBoard();
     }
     const getForm = () => {
         const p1Name = document.getElementById('p1Name').value;
@@ -87,16 +92,16 @@ var displayController = (function() {
     const hideForm = () => {
         form.style.display = 'none';
     }
-    const populateBoard = () => {
+    const _populateBoard = () => {
         buttons.forEach(button => {
             board.appendChild(button);
         })
     }
-    const clearBoard = () => {
+    const _clearBoard = () => {
         board.innerHTML = '';
     }
     const updateBoard = () => {
-        clearBoard()
+        _clearBoard()
         for(let i = 0; i < buttons.length; i++) {
             buttons[i].textContent = gameBoard.getTic(i);
         }

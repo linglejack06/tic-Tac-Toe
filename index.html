@@ -11,16 +11,32 @@
 <body>
     <div class="form">
         <form>
-            <input type="text" name="p1Name" id="p1Name">
-            <input type="text" name="p2Name" id="p2Name">
+            <div class="input-container">
+                <label for="p1Name">P1 Name (X)</label>
+                <input type="text" name="p1Name" id="p1Name" required>
+            </div>
+            <div class="input-container">
+                <label for="p2Name">P2 Name (O)</label>
+                <input type="text" name="p2Name" id="p2Name" required>
+            </div>
             <button id="start">Start Game</button>
         </form>
     </div>
-    <div id="board" class="board">
-
+    <div class="main-screen">
+        <div class="head">
+            <header>
+                <h1 class="title">TIC TAC TOE</h1>
+            </header>
+            <h1 class="p1"></h1>
+            <h1 class="p2"></h1>
+        </div>
+        <div id="board" class="board">
+        </div>
     </div>
-    <div id="score" class="score">
+    <div id="score" class="score inactive">
+        <div class="win-popup">
 
+        </div>
     </div>
 </body>
 </html>

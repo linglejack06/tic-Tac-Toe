@@ -10,12 +10,38 @@ body {
     height: 100vh;
     width: 100vw;
 }
+.main-screen {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
 .board {
     display: grid;
-    height: 100%;
+    height: 80%;
+    width: 80vw;
     grid-template-columns: 1fr 1fr 1fr;
     grid-template-rows: 1fr 1fr 1fr;
 }
 .form {
     display: block;
+}
+.score {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.win-popup {
+    height: 40%;
+    width: 40%;
+    background-color: blue;
+}
+.inactive {
+    display: none;
+}
+.active {
+    display: flex;
+    flex-direction: column;
 }
