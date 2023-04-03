@@ -1,20 +1,25 @@
 
 const player = function(tic, name) {
     let active = false;
+    let score = 0;
     const isActive = () => active;
     const toggleActive = () => {
         active = (active === false ? true : false);
+    }
+    const getScore = () => score;
+    const incrementScore = () => {
+        score++;
     }
     return {tic, name, isActive, toggleActive}
 }
 const gameBoard = (function() {
     let tics = ['', '', '', '', '', '', '', '', ''];
     let winOptions = [[0, 1, 2], [3, 4, 5], [6, 7, 8], [0, 3, 6], [1, 4, 7], [2, 5, 8], [0, 4, 8], [2, 4, 6]];
-    let playerOne = player('X', 'Bob');
-    let playerTwo = player('O', 'Sarah');
-    let score = { 
-        p1: 0,
-        p2: 0
+    let players;
+    const startGame = (e) => {
+        e.preventDefault();
+        players = displayController.getForm();
+        displayController.renderGame();
     }
     const checkWin = () => {
         let emptyTics = 0;
@@ -37,20 +42,17 @@ const gameBoard = (function() {
         return 'none';
        }
     }
-    const incrementScore = (winner) => {
-        score[winner] += 1;
-    }
     const playTurn = (e) => {
-        tics[e.target.dataset.index] = playerOne.isActive() ? playerOne.tic : playerTwo.tic;
+        tics[e.target.dataset.index] = players.p1.isActive() ? players.p1.tic : players.p2.tic;
         const winner = checkWin();
         displayController.updateBoard()
-        playerOne.toggleActive();
+        players.p1.toggleActive();
         if (winner !== 'none') {
             displayController.showWinner(winner);
         }
     }
     const getTic = (index) => tics[index];
-    return {playTurn, getTic};
+    return {playTurn, getTic, startGame};
 })();
 const gameSpace = (index) => {
     let button = document.createElement('button');
@@ -62,8 +64,9 @@ const gameSpace = (index) => {
 var displayController = (function() {
     let board = document.getElementById('board');
     let score = document.getElementById('score');
-    let playerOne = player('X', 'Bob');
-    let playerTwo = player('O', 'Sarah');
+    let form = document.querySelector('.form');
+    let startButton = document.getElementById('start');
+    startButton.addEventListener('click', gameBoard.startGame);
     let buttons = [];
     for (let i = 0; i < 9; i++) {
         buttons.push(gameSpace(i))
@@ -71,6 +74,18 @@ var displayController = (function() {
     const showWinner = (winner) => {
         clearBoard();
         console.log(winner);
+    }
+    const renderGame = () => {
+        hideForm();
+        populateBoard();
+    }
+    const getForm = () => {
+        const p1Name = document.getElementById('p1Name').value;
+        const p2Name = document.getElementById('p2Name').value;
+        return {p1: player('X', p1Name), p2: player('O', p2Name)};
+    }
+    const hideForm = () => {
+        form.style.display = 'none';
     }
     const populateBoard = () => {
         buttons.forEach(button => {
@@ -87,7 +102,6 @@ var displayController = (function() {
         }
         populateBoard();
     }
-    return {populateBoard, updateBoard, showWinner};
+    return {renderGame, getForm, updateBoard, showWinner};
 })();
 
-displayController.populateBoard()
