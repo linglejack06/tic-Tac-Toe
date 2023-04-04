@@ -10,7 +10,7 @@ const player = function(tic, name) {
     const incrementScore = () => {
         score++;
     }
-    return {tic, name, isActive, toggleActive}
+    return {tic, name, isActive, toggleActive, getScore, incrementScore}
 }
 const gameBoard = (function() {
     let tics = ['', '', '', '', '', '', '', '', ''];
@@ -19,8 +19,7 @@ const gameBoard = (function() {
     const startGame = (e) => {
         e.preventDefault();
         players = displayController.getForm(players);
-        console.log(players);
-        displayController.renderGame();
+        displayController.renderGame(players);
     }
     const checkWin = () => {
         let emptyTics = 0;
@@ -38,6 +37,11 @@ const gameBoard = (function() {
        if (emptyTics === 0 && winner === '') {
             return 'tie';
        } else if (winner !== '') {
+            if (winner === players.p1.tic) {
+                players.p1.incrementScore();
+            } else {
+                players.p2.incrementScore();
+            }
             return winner;
        } else {
         return 'none';
@@ -52,14 +56,15 @@ const gameBoard = (function() {
         displayController.updateBoard()
         players.p1.toggleActive();
         if (winner !== 'none') {
-            displayController.showWinner((players.p1.tic === winner) ? players.p1.name : players.p2.name);
+            console.log(winner);
+            displayController.showWinner(winner, players);
         }
     }
-    const getScore = () => {
-        return {p1Score: players.p1.score, p2Score: players.p2.score};
+    const getPlayers = () => {
+        return players;
     }
     const getTic = (index) => tics[index];
-    return {playTurn, getTic, resetTics, startGame, getScore};
+    return {playTurn, getTic, resetTics, startGame, getPlayers};
 })();
 const gameSpace = (index) => {
     let button = document.createElement('button');
@@ -71,35 +76,40 @@ const gameSpace = (index) => {
 var displayController = (function() {
     let board = document.getElementById('board');
     let score = document.getElementById('score');
-    let playerScore = gameBoard.getScore();
     let scoreText = document.querySelector('.score');
-    let winnerName = document.querySelector('winner');
+    let winnerName = document.querySelector('.winner');
     let form = document.querySelector('.form');
     let startButton = document.getElementById('start');
     let restartButton = document.querySelector('.restart');
     let nextGameButton = document.querySelector('.next-game');
+    let p1Text = document.querySelector('.p1');
+    let p2Text = document.querySelector('.p2');
+    let mainDisplay = document.querySelector('.main-screen');
     let buttons = [];
     for (let i = 0; i < 9; i++) {
         buttons.push(gameSpace(i))
     }
-    const showWinner = (winner) => {
+    const showWinner = (winner, players) => {
         _clearBoard();
-        _renderWin(winner);
+        _hideBoard();
+        _renderWin(winner, players);
     }
-    const _renderWin = (winner) => {
+    const _renderWin = (winner, players) => {
         score.classList.remove('inactive')
         score.classList.add('active');
         winnerName.textContent = `Winner: ${winner}`;
-        scoreText.textContent = `${playerScore.p1Score}(X) - ${playerScore.p2Score}(O)`;
+        scoreText.textContent = `${players.p1.getScore()}(X) - ${players.p2.getScore()}(O)`;
     }
     const _hideWin = () => {
         score.classList.remove('active');
         score.classList.add('inactive');
         
     }
-    const renderGame = () => {
+    const renderGame = (players) => {
         _hideForm();
         _hideWin();
+        _showBoard();
+        _displayPlayerNames(players);
         _populateBoard();
     }
     const getForm = (players) => {
@@ -119,6 +129,14 @@ var displayController = (function() {
         form.style.display = 'block';
         gameBoard.resetTics();
     }
+    const _renderNewGame = () => {
+        const players = gameBoard.getPlayers();
+        renderGame(players);
+    }
+    const _displayPlayerNames = (players) => {
+        p1Text.textContent = `${players.p1.name}(X): ${players.p1.score}`;
+        p2Text.textContent = `${players.p2.name}(O): ${players.p2.score}`;
+    }
     const _hideForm = () => {
         form.style.display = 'none';
     }
@@ -130,6 +148,12 @@ var displayController = (function() {
     const _clearBoard = () => {
         board.innerHTML = '';
     }
+    const _hideBoard = () => {
+        mainDisplay.style.display = 'none';
+    }
+    const _showBoard = () => {
+        mainDisplay.style.display = 'block';
+    }
     const updateBoard = () => {
         _clearBoard()
         for(let i = 0; i < buttons.length; i++) {
@@ -139,7 +163,7 @@ var displayController = (function() {
     }
     startButton.addEventListener('click', gameBoard.startGame);
     restartButton.addEventListener('click', _resetGame);
-    nextGameButton.addEventListener('click', renderGame);
+    nextGameButton.addEventListener('click', _renderNewGame);
     return {renderGame, getForm, updateBoard, showWinner};
 })();
 
