@@ -10,7 +10,7 @@ body {
     height: 100vh;
     width: 100vw;
 }
-.main-screen {
+.active-main {
     height: 100%;
     display: flex;
     flex-direction: column;
@@ -18,13 +18,77 @@ body {
 }
 .board {
     display: grid;
-    height: 80%;
-    width: 80vw;
+    height: 400px;
+    width: 400px;
+    border: 8px solid black;
     grid-template-columns: 1fr 1fr 1fr;
     grid-template-rows: 1fr 1fr 1fr;
 }
 .form {
-    display: block;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    width: 100vw;
+}
+.popup {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    width: 100vw;
+}
+.win-popup {
+    background-color: cornflowerblue;
+    display: flex;
+    flex-direction: column;
+    padding: 24px;
+    border-radius: 4px;
+    gap: 12px;
+    color: white;
+}
+.win-popup>button {
+    border-radius: 8px;
+    border: 0px;
+    padding: 4px;
+}
+.next-game {
+    background-color: lightgreen;
+}
+.next-game:hover {
+    background-color: greenyellow;
+    cursor: pointer;
+}
+.restart {
+    background-color: lightcoral;
+}
+.restart:hover {
+    background-color: red;
+    cursor: pointer;
+}
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    width: 50vw;
+    background-color: cornflowerblue;
+    padding: 12px;
+    border-radius: 4px;
+}
+form>button {
+    margin-top: 8px;
+    background-color: lightgreen;
+    border-radius: 8px;
+    border: 0px;
+}
+form>button:hover {
+    background-color: greenyellow;
+    cursor: pointer;
+}
+.input-container {
+    display: flex;
+    flex-direction: column;
+    color: white;
 }
 .score {
     height: 100%;
@@ -33,11 +97,6 @@ body {
     align-items: center;
     justify-content: center;
 }
-.win-popup {
-    height: 40%;
-    width: 40%;
-    background-color: blue;
-}
 .inactive {
     display: none;
 }
@@ -45,9 +104,29 @@ body {
     display: flex;
     flex-direction: column;
 }
-.main-screen {
+.inactive-main {
     display: none;
 }
 .current-turn {
     color: green;
+}
+.head {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    gap: 8px;
+}
+.players {
+    display: flex;
+    justify-content: space-between;
+    gap: 25vw;
+}
+.main-screen {
+    padding: 24px;
+    gap: 8px;
+}
+.game-piece {
+    font-size: 4rem;
+    font-weight: bold;
 }

@@ -116,10 +116,10 @@ var displayController = (function() {
     const getForm = (players) => {
         const p1Name = document.getElementById('p1Name').value;
         const p2Name = document.getElementById('p2Name').value;
-        if(p1Name !== null) {
+        if(p1Name !== '') {
             players.p1.name = p1Name;
         }
-        if(p2Name !== null) {
+        if(p2Name !== '') {
             players.p2.name = p2Name;
         }
         players.p1.score = 0;
@@ -127,7 +127,10 @@ var displayController = (function() {
         return players;
     }
     const _resetGame = () => {
-        form.style.display = 'block';
+        form.classList.add('active');
+        form.classList.remove('inactive')
+        _hideWin();
+        updateBoard();
         gameBoard.resetTics();
     }
     const _renderNewGame = () => {
@@ -141,7 +144,8 @@ var displayController = (function() {
         p2Text.textContent = `${players.p2.name}(O): ${players.p2.getScore()}`;
     }
     const _hideForm = () => {
-        form.style.display = 'none';
+        form.classList.remove('active');
+        form.classList.add('inactive');
     }
     const _populateBoard = () => {
         buttons.forEach(button => {
@@ -152,10 +156,12 @@ var displayController = (function() {
         board.innerHTML = '';
     }
     const _hideBoard = () => {
-        mainDisplay.style.display = 'none';
+        mainDisplay.classList.remove('active-main');
+        mainDisplay.classList.add('inactive-main')
     }
     const _showBoard = () => {
-        mainDisplay.style.display = 'block';
+        mainDisplay.classList.remove('inactive-main');
+        mainDisplay.classList.add('active-main');
     }
     const updateBoard = () => {
         _clearBoard()
