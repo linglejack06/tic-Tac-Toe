@@ -48,3 +48,6 @@ body {
 .main-screen {
     display: none;
 }
+.current-turn {
+    color: green;
+}

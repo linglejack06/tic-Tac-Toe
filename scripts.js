@@ -53,8 +53,8 @@ const gameBoard = (function() {
     const playTurn = (e) => {
         tics[e.target.dataset.index] = players.p1.isActive() ? players.p1.tic : players.p2.tic;
         const winner = checkWin();
-        displayController.updateBoard()
         players.p1.toggleActive();
+        displayController.updateBoard()
         if (winner !== 'none') {
             console.log(winner);
             displayController.showWinner(winner, players);
@@ -111,6 +111,7 @@ var displayController = (function() {
         _showBoard();
         _displayPlayerNames(players);
         _populateBoard();
+        _updateCurrentTurn();
     }
     const getForm = (players) => {
         const p1Name = document.getElementById('p1Name').value;
@@ -131,11 +132,13 @@ var displayController = (function() {
     }
     const _renderNewGame = () => {
         const players = gameBoard.getPlayers();
+        gameBoard.resetTics();
         renderGame(players);
+        updateBoard();
     }
     const _displayPlayerNames = (players) => {
-        p1Text.textContent = `${players.p1.name}(X): ${players.p1.score}`;
-        p2Text.textContent = `${players.p2.name}(O): ${players.p2.score}`;
+        p1Text.textContent = `${players.p1.name}(X): ${players.p1.getScore()}`;
+        p2Text.textContent = `${players.p2.name}(O): ${players.p2.getScore()}`;
     }
     const _hideForm = () => {
         form.style.display = 'none';
@@ -160,6 +163,17 @@ var displayController = (function() {
             buttons[i].textContent = gameBoard.getTic(i);
         }
         _populateBoard();
+        _updateCurrentTurn();
+    }
+    const _updateCurrentTurn = () => {
+        let players = gameBoard.getPlayers();
+        if (players.p1.isActive()) {
+            p2Text.classList.remove('current-turn');
+            p1Text.classList.add('current-turn');
+        } else {
+            p1Text.classList.remove('current-turn');
+            p2Text.classList.add('current-turn');
+        }
     }
     startButton.addEventListener('click', gameBoard.startGame);
     restartButton.addEventListener('click', _resetGame);
